@@ -1,0 +1,28 @@
+<section aria-label="Werkzeuge" class="space-y-4 border-b border-slate-200 bg-slate-50 px-5 py-4">
+  <div class="flex flex-wrap gap-4">
+    <fieldset class="flex flex-wrap gap-2">
+      <legend class="mb-2 text-xs font-semibold text-slate-600">Datei</legend>
+      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Neu</button>
+      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Öffnen</button>
+      <button type="button" class="rounded-md bg-emerald-700 px-3 py-2 text-sm text-white">Speichern</button>
+      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Exportieren</button>
+    </fieldset>
+    <fieldset class="flex flex-wrap gap-2">
+      <legend class="mb-2 text-xs font-semibold text-slate-600">Bearbeiten</legend>
+      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Rückgängig</button>
+      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Wiederholen</button>
+    </fieldset>
+    <fieldset class="flex gap-2">
+      <legend class="mb-2 text-xs font-semibold text-slate-600">Formatierung</legend>
+      <button type="button" aria-label="Fett" class="rounded-md border border-slate-300 bg-white px-3 py-2 font-bold">F</button>
+      <button type="button" aria-label="Kursiv" class="rounded-md border border-slate-300 bg-white px-3 py-2 italic">K</button>
+      <button type="button" aria-label="Unterstrichen" class="rounded-md border border-slate-300 bg-white px-3 py-2 underline">U</button>
+    </fieldset>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <label for="cell-reference" class="text-sm font-medium">Zelle</label>
+    <input id="cell-reference" type="text" value="A1" readonly class="w-20 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" />
+    <label for="formula" class="text-sm font-medium">Formel</label>
+    <input id="formula" type="text" placeholder="Wert oder Formel eingeben" class="min-w-40 flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" />
+  </div>
+</section>
