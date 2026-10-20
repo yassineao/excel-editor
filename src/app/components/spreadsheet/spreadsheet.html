@@ -19,10 +19,12 @@
             @for (col of cols(); track col) {
               <td class="border border-slate-200">
                 <input
+                  #cellInput
                   type="text"
                   [attr.aria-label]="'Cell ' + row + '-' + col"
                   class="w-full min-w-32 px-3 py-2"
                   [value]="sheet().cells.get(row + ',' + col)?.value ?? ''"
+                  (input)="updateCell(row, col, cellInput.value)"
                 >
               </td>
             }

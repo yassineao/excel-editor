@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-toolbar',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.css',
 })
-export class Toolbar {}
+export class Toolbar {
+  readonly saveRequested = output<void>();
+}

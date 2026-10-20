@@ -4,9 +4,9 @@
     <p class="text-sm text-slate-500">Tabelle 1</p>
   </header>
 
-  <app-toolbar class="block" />
+  <app-toolbar class="block" (saveRequested)="saveWorkbook()" />
   @if (workbookService.currentSheet(); as sheet) {
-    <app-spreadsheet class="block" [sheet]="sheet" />
+    <app-spreadsheet class="block" [sheet]="sheet" (cellChanged)="onCellChanged()" />
   }
 
   <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-5 py-3 text-sm">
