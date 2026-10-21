@@ -10,7 +10,7 @@ import { CellsService } from '../../services/cells.service';
 })
 export class Spreadsheet {
   sheet = input.required<Sheet>();
-  readonly cellChanged = output<void>();
+  readonly sheetChanged = output<Sheet>();
   readonly sheetService = computed(() => new SheetService(this.sheet()));
   readonly cellsService = computed(() => new CellsService(this.sheet()));
   rows = computed(() => Array.from({ length: this.sheet().rows }, (_, i) => i));
@@ -18,7 +18,28 @@ export class Spreadsheet {
 
   updateCell(row: number, col: number, value: string): void {
     this.cellsService().updateCell(row, col, { value });
-    this.cellChanged.emit();
+  }
+
+  commitChanges(): void {
+    this.sheetChanged.emit(this.sheet());
+  }
+
+  updateRow(row: number, offset: 1 | -1 = 1): void {
+    if (offset === 1) {
+      this.sheetService().addRow(row);
+    } else {
+      this.sheetService().deleteRow(row);
+    }
+    this.commitChanges();
+  }
+
+  updateCol(col: number, offset: 1 | -1 = 1): void {
+    if (offset === 1) {
+      this.sheetService().addCol(col);
+    } else {
+      this.sheetService().deleteCol(col);
+    }
+    this.commitChanges();
   }
 
   getColumnLetter(index: number): string {

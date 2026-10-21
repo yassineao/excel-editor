@@ -4,9 +4,20 @@
     <p class="text-sm text-slate-500">Tabelle 1</p>
   </header>
 
-  <app-toolbar class="block" (saveRequested)="saveWorkbook()" />
+  <app-toolbar
+    class="block"
+    [sheets]="workbookService.sheets()"
+    (sheetSelected)="workbookService.selectSheet($event)"
+    (saveRequested)="saveWorkbook()"
+    (newSheet)="addSheet()"
+    (deleteSheet)="deleteSheet()"
+  />
   @if (workbookService.currentSheet(); as sheet) {
-    <app-spreadsheet class="block" [sheet]="sheet" (cellChanged)="onCellChanged()" />
+    <app-spreadsheet
+      class="block"
+      [sheet]="sheet"
+      (sheetChanged)="onSheetChanged($event)"
+    />
   }
 
   <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-5 py-3 text-sm">

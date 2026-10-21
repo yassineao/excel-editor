@@ -2,9 +2,10 @@
   <div class="flex flex-wrap gap-4">
     <fieldset class="flex flex-wrap gap-2">
       <legend class="mb-2 text-xs font-semibold text-slate-600">Datei</legend>
-      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Neu</button>
-      <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Öffnen</button>
-      <button type="button" (click)="saveRequested.emit()" class="rounded-md bg-emerald-700 px-3 py-2 text-sm text-white">Speichern</button>
+      <button type="button"(click)="newSheet.emit()"  class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Neu</button>
+      <button type="button" (click)="sheetDialog.showModal()" aria-haspopup="dialog" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Öffnen</button>
+      <button type="button" (click)="saveRequested.emit()" class="rounded-md bg-emerald-900 px-3 py-2 text-sm text-white">Speichern</button>
+      <button type="button" (click)="deleteSheet.emit()" class="rounded-md bg-red-900 px-3 py-2 text-sm text-white">löschen</button>
       <button type="button" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">Exportieren</button>
     </fieldset>
     <fieldset class="flex flex-wrap gap-2">
@@ -26,3 +27,22 @@
     <input id="formula" type="text" placeholder="Wert oder Formel eingeben" class="min-w-40 flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" />
   </div>
 </section>
+
+<dialog #sheetDialog aria-labelledby="sheet-dialog-title" class="m-auto w-full max-w-md rounded-xl border border-slate-200 bg-white p-0 shadow-xl backdrop:bg-slate-900/40">
+  <header class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+    <h2 id="sheet-dialog-title" class="text-lg font-semibold text-slate-900">Tabelle öffnen</h2>
+    <button type="button" autofocus (click)="sheetDialog.close()" aria-label="Schließen" class="rounded-md px-3 py-1 text-xl text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600">×</button>
+  </header>
+  <ul class="max-h-80 space-y-2 overflow-y-auto p-5">
+    @for (sheet of sheets(); track sheet.id) {
+      <li>
+        <button type="button" (click)="sheetSelected.emit(sheet.id); sheetDialog.close()" class="flex w-full items-center justify-between gap-4 rounded-lg border border-slate-200 px-4 py-3 text-left hover:border-emerald-500 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600">
+          <span class="min-w-0 break-words font-medium text-slate-900">{{ sheet.name }}</span>
+          <span class="shrink-0 text-xs text-slate-500">{{ sheet.rows }} Zeilen · {{ sheet.columns }} Spalten</span>
+        </button>
+      </li>
+    } @empty {
+      <li class="py-6 text-center text-sm text-slate-500">Noch keine Tabellen vorhanden.</li>
+    }
+  </ul>
+</dialog>

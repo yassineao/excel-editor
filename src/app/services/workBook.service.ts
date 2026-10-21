@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { Workbook } from '../models/workBook.model';
 import { Sheet } from '../models/sheets.model';
 import { Cell } from '../models/cells.model';
+import { SheetService } from './sheets.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,23 +11,53 @@ export class WorkBooksService {
   private readonly workBook = signal<Workbook>({
     id: '1',
     name: 'Workbook',
-    sheets: [{ id: '1', name: 'Sheet', rows: 10, columns: 5, cells: new Map() }],
+    sheets: [SheetService.createSheet('1')],
   });
 
-  index: number = 0;
+  private readonly index = signal(0);
   readonly name = computed(() => this.workBook().name);
-  readonly currentSheet = computed(() => this.workBook().sheets.at(this.index));
+  readonly sheets = computed(() => this.workBook().sheets);
+  readonly currentSheet = computed(() => this.workBook().sheets.at(this.index()));
 
-  nextSheet() {
-    this.index = this.workBook().sheets.length > this.index ? this.index : this.index + 1;
+  nextSheet(): void {
+    this.index.update((index) => (index < this.workBook().sheets.length - 1 ? index + 1 : index));
   }
 
-  previousSheet() {
-    this.index = this.index > 0 ? this.index : this.index - 1;
+  selectSheet(id: string): void {
+    const index = this.workBook().sheets.findIndex((sheet) => sheet.id === id);
+    if (index !== -1) {
+      this.index.set(index);
+    }
   }
 
-  addingSheet(sheet: Sheet): void {
-    this.workBook.update((book) => ({ ...book, sheets: [...book.sheets, sheet] }));
+  previousSheet(): void {
+    this.index.update((index) => Math.max(0, index - 1));
+  }
+
+  addingSheet(sheet?: Sheet): void {
+    this.workBook.update((book) => {
+      const highestId = book.sheets.reduce((highest, existing) => {
+        const id = Number(existing.id);
+        return Number.isSafeInteger(id) && id > highest ? id : highest;
+      }, 0);
+      const newSheet = sheet ?? SheetService.createSheet(String(highestId + 1));
+      return { ...book, sheets: [...book.sheets, newSheet] };
+    });
+  }
+
+  deletingSheet(id: string): void {
+    const index = this.sheets().findIndex((sheet) => sheet.id === id);
+
+    if (index !== -1) {
+      this.sheets().splice(index, 1);
+    }
+  }
+
+  updateSheet(sheet: Sheet): void {
+    this.workBook.update((book) => ({
+      ...book,
+      sheets: book.sheets.map((existing) => (existing.id === sheet.id ? { ...sheet } : existing)),
+    }));
   }
 
   renameWorkBook(name: string): void {
@@ -68,6 +99,7 @@ export class WorkBooksService {
       };
 
       this.workBook.set(workbook);
+      this.index.set(0);
     } catch (error) {
       console.error('Workbook konnte nicht geladen werden', error);
     }

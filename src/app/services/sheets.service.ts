@@ -1,6 +1,16 @@
 import { Sheet } from '../models/sheets.model';
 import { Cell } from '../models/cells.model';
 export class SheetService {
+  static createSheet(id: string, name = 'Sheet'): Sheet {
+    return {
+      id,
+      name,
+      rows: 5,
+      columns: 4,
+      cells: new Map<string, Cell>(),
+    };
+  }
+
   constructor(private readonly sheet: Sheet) {}
 
   addRow(index: number): void {

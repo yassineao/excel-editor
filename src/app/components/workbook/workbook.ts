@@ -1,7 +1,8 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { WorkBooksService } from '../../services/workBook.service';
 import { Spreadsheet } from '../spreadsheet/spreadsheet';
 import { Toolbar } from '../toolbar/toolbar';
+import { Sheet } from '../../models/sheets.model';
 
 @Component({
   selector: 'app-workbook',
@@ -9,34 +10,40 @@ import { Toolbar } from '../toolbar/toolbar';
   templateUrl: './workbook.html',
   styleUrl: './workbook.css',
 })
-export class Workbook implements OnInit, OnDestroy {
+export class Workbook implements OnInit {
   protected readonly workbookService = inject(WorkBooksService);
 
   ngOnInit(): void {
     this.workbookService.loadWorkbook();
   }
 
-  private saveTimer?: ReturnType<typeof setTimeout>;
-
   saveWorkbook(): void {
-    clearTimeout(this.saveTimer);
-    this.saveTimer = undefined;
     this.workbookService.saveWorkbook();
   }
 
-  onCellChanged(): void {
-    clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => {
-      this.workbookService.saveWorkbook();
-      this.saveTimer = undefined;
-    }, 1000);
-
-  }
-
-  ngOnDestroy(): void {
-    if (this.saveTimer !== undefined) {
-      clearTimeout(this.saveTimer);
-      this.workbookService.saveWorkbook();
+  addSheet(): void {
+    this.workbookService.addingSheet();
+    const latestSheet = this.workbookService.sheets().at(-1);
+    if (latestSheet) {
+      this.workbookService.selectSheet(latestSheet.id);
     }
+    this.saveWorkbook();
   }
+
+  deleteSheet(): void {
+    const sheet = this.workbookService.currentSheet();
+
+    if (sheet) {
+      this.workbookService.deletingSheet(sheet.id);
+      this.workbookService.selectSheet("1");
+    }
+    this.saveWorkbook();
+
+  }
+
+  onSheetChanged(sheet: Sheet): void {
+    this.workbookService.updateSheet(sheet);
+    this.saveWorkbook();
+  }
+
 }

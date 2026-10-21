@@ -33,39 +33,33 @@ describe('Workbook', () => {
     expect(save).toHaveBeenCalledOnce();
   });
 
-  it('saves two seconds after the last cell edit', () => {
-    vi.useFakeTimers();
+  it('saves when a cell edit is committed, not on each keystroke', () => {
     const save = vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
-    try {
-      const input: HTMLInputElement = fixture.nativeElement.querySelector('td input');
-      input.value = 'First';
-      input.dispatchEvent(new Event('input'));
-      vi.advanceTimersByTime(1000);
-      input.value = 'Latest';
-      input.dispatchEvent(new Event('input'));
-      vi.advanceTimersByTime(1999);
-      expect(save).not.toHaveBeenCalled();
-      vi.advanceTimersByTime(1);
-      expect(save).toHaveBeenCalledOnce();
-      expect(TestBed.inject(WorkBooksService).currentSheet()?.cells.get('0,0')?.value).toBe('Latest');
-    } finally {
-      fixture.destroy();
-      vi.useRealTimers();
-    }
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('td input');
+    input.value = 'Latest';
+    input.dispatchEvent(new Event('input'));
+    expect(save).not.toHaveBeenCalled();
+    input.dispatchEvent(new Event('change'));
+    expect(save).toHaveBeenCalledOnce();
+    expect(TestBed.inject(WorkBooksService).currentSheet()?.cells.get('0,0')?.value).toBe('Latest');
   });
 
-  it('flushes a pending save when destroyed and cancels the timer', () => {
-    vi.useFakeTimers();
-    const save = vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
-    try {
-      component.onCellChanged();
-      fixture.destroy();
-      expect(save).toHaveBeenCalledOnce();
-      vi.advanceTimersByTime(2000);
-      expect(save).toHaveBeenCalledOnce();
-    } finally {
-      vi.useRealTimers();
-    }
+  it('refreshes rows and shifted values after insertion and deletion', async () => {
+    vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
+    const service = TestBed.inject(WorkBooksService);
+    service.currentSheet()!.cells.set('0,0', { value: 'Keep' });
+    const count = () => fixture.nativeElement.querySelectorAll('tbody tr').length;
+    const initial = count();
+    const insert: HTMLButtonElement = fixture.nativeElement.querySelector('tbody th button');
+    insert.click();
+    await fixture.whenStable();
+    expect(count()).toBe(initial + 1);
+    expect(service.currentSheet()!.cells.get('1,0')?.value).toBe('Keep');
+    const remove = fixture.nativeElement.querySelectorAll('tbody th button')[1] as HTMLButtonElement;
+    remove.click();
+    await fixture.whenStable();
+    expect(count()).toBe(initial);
+    expect(service.currentSheet()!.cells.get('0,0')?.value).toBe('Keep');
   });
 
   it('updates the displayed name when the service renames the workbook', async () => {
