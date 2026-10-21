@@ -46,11 +46,18 @@ export class WorkBooksService {
   }
 
   deletingSheet(id: string): void {
-    const index = this.sheets().findIndex((sheet) => sheet.id === id);
+    const sheets = this.sheets();
 
-    if (index !== -1) {
-      this.sheets().splice(index, 1);
-    }
+    const index = sheets.findIndex((sheet) => sheet.id === id);
+
+    if (index === -1 || sheets.length <= 1) return;
+
+    this.workBook.update((book) => ({
+      ...book,
+      sheets: book.sheets.filter((sheet) => sheet.id !== id),
+    }));
+
+    this.index.set(Math.min(this.index(), this.sheets().length - 1));
   }
 
   updateSheet(sheet: Sheet): void {
