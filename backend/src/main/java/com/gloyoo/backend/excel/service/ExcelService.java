@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Service
 public class ExcelService {
-
+    // exporting Excel as byte
     public ResponseEntity<byte[]> exportExcel(ExportExcelRequest request) throws IOException {
         WorkbookDTO workbookDTO = new WorkbookDTO(request.name(), request.sheets());
         byte[] content = writeExcel(workbookDTO);
@@ -38,6 +38,7 @@ public class ExcelService {
                 .body(content);
     }
 
+    // getting The FileName AKA workbook
     private String getExportFilename(String name) {
         String filename = name == null || name.isBlank() ? "workbook" : name;
         filename = filename.replaceAll("[\\\\/\\r\\n]", "_");
@@ -47,6 +48,7 @@ public class ExcelService {
         return filename;
     }
 
+    // importing Excel File
     public WorkbookDTO readFile(MultipartFile file) throws IOException{
         validateExcelFile(file);
         ArrayList<SheetsDTO> sheetsDTOs = new ArrayList<>();
@@ -77,7 +79,7 @@ public class ExcelService {
     }
 
 
-
+// writing excel file from a workbbokDTO
     private byte[] writeExcel(WorkbookDTO workbookDTO) throws IOException {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream output = new ByteArrayOutputStream()) {
@@ -107,12 +109,11 @@ public class ExcelService {
             }
             workbook.write(output);
 
-            // Convert to byte[]
             return output.toByteArray();
         }
 
     }
-
+//converting Cell (ApachePOI) to CellDTO
     private void setCellValue(Cell cell, CellDTO cellDTO) {
         Object value = cellDTO.value();
         CellType type = CellType.valueOf(cellDTO.type());
@@ -130,7 +131,7 @@ public class ExcelService {
             default -> throw new IllegalArgumentException("Unsupported cell type: " + type);
         }
     }
-
+//getting Cell value and type
     private CellDTO getCellValue(Cell cell) {
         if (cell == null) {
             return null;
@@ -147,6 +148,8 @@ public class ExcelService {
         return new CellDTO(value, String.valueOf(cell.getCellType()));
 
     }
+
+    //testing the Input File
     private void validateExcelFile(@NonNull MultipartFile file) throws IOException{
 
         if (file.isEmpty()) {
