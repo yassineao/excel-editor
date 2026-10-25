@@ -30,7 +30,10 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-.angular/cache/
+**/.angular/cache/
+.cache/
+.vite/
+*.tsbuildinfo
 .sass-cache/
 /connect.lock
 coverage/

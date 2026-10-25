@@ -79,7 +79,7 @@ public class ExcelService {
     }
 
 
-// writing excel file from a workbbokDTO
+    // writing excel file from a workbbokDTO
     private byte[] writeExcel(WorkbookDTO workbookDTO) throws IOException {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream output = new ByteArrayOutputStream()) {
@@ -113,40 +113,77 @@ public class ExcelService {
         }
 
     }
-//converting Cell (ApachePOI) to CellDTO
+
+    //converting Cell (ApachePOI) to CellDTO
     private void setCellValue(Cell cell, CellDTO cellDTO) {
         Object value = cellDTO.value();
         CellType type = CellType.valueOf(cellDTO.type());
 
         switch (type) {
-            case STRING -> cell.setCellValue((String) value);
-            case NUMERIC -> cell.setCellValue(((Number) value).doubleValue());
-            case BOOLEAN -> cell.setCellValue((Boolean) value);
+            case STRING -> {
+                if (!(value instanceof String stringValue)) {
+                    throw new IllegalArgumentException("STRING requires a String value");
+                }
+                cell.setCellValue(stringValue);
+            }
+            case NUMERIC -> {
+                if (!(value instanceof Number numericValue)) {
+                    throw new IllegalArgumentException("NUMERIC requires a Number value");
+                }
+                cell.setCellValue(numericValue.doubleValue());
+            }
+            case BOOLEAN -> {
+                if (!(value instanceof Boolean booleanValue)) {
+                    throw new IllegalArgumentException("BOOLEAN requires a Boolean value");
+                }
+                cell.setCellValue(booleanValue);
+            }
             case FORMULA -> {
-                String formula = (String) value;
+                if (!(value instanceof String formula)) {
+                    throw new IllegalArgumentException("FORMULA requires a String value");
+                }
                 cell.setCellFormula(formula.startsWith("=") ? formula.substring(1) : formula);
             }
             case BLANK -> cell.setBlank();
-            case ERROR -> cell.setCellErrorValue(((Number) value).byteValue());
+            case ERROR -> {
+                if (!(value instanceof Number errorValue)) {
+                    throw new IllegalArgumentException("ERROR requires a Number value");
+                }
+                cell.setCellErrorValue(errorValue.byteValue());
+            }
             default -> throw new IllegalArgumentException("Unsupported cell type: " + type);
         }
     }
-//getting Cell value and type
+
     private CellDTO getCellValue(Cell cell) {
         if (cell == null) {
             return null;
         }
-        Object value = switch (cell.getCellType()) {
-            case STRING ->  cell.getStringCellValue();
-            case NUMERIC -> cell.getNumericCellValue();
-            case BOOLEAN -> cell.getBooleanCellValue();
-            case FORMULA -> "=" + cell.getCellFormula();
-            case BLANK -> null;
-            case ERROR -> cell.getErrorCellValue();
-            default -> null;
-        };
-        return new CellDTO(value, String.valueOf(cell.getCellType()));
 
+        try {
+            CellType type = cell.getCellType();
+
+            Object value = switch (type) {
+                case STRING -> cell.getStringCellValue();
+                case NUMERIC -> cell.getNumericCellValue();
+                case BOOLEAN -> cell.getBooleanCellValue();
+                case FORMULA -> "=" + cell.getCellFormula();
+                case BLANK -> null;
+                case ERROR -> cell.getErrorCellValue();
+
+                default -> throw new IllegalArgumentException(
+                        "Unsupported cell type: " + type
+                );
+            };
+
+            return new CellDTO(value, type.name());
+
+        } catch (IllegalStateException e) {
+            throw new IllegalArgumentException(
+                    "Invalid cell value at " + cell.getAddress(),
+                    e
+            );
+        }
     }
 
     //testing the Input File

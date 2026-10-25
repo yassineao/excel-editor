@@ -97,6 +97,30 @@ class ExcelServiceTest {
     }
 
     @Test
+    void rejectsFalseTypeValue() throws IOException {
+        ArrayList<SheetsDTO> sheets = new ArrayList<>();
+        HashMap<String, CellDTO> cells = new HashMap<>();
+
+        cells.put("0,0", new CellDTO("Hello", "BOOLEAN"));
+
+        sheets.add(new SheetsDTO(
+                "Sheet2",
+                 cells,
+                20,
+                8
+        ));
+
+        ExportExcelRequest exportExcelRequest = new ExportExcelRequest(
+                "test.xlsx",
+                "test",
+                sheets
+        );
+        assertThatThrownBy(() -> service.exportExcel(exportExcelRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("BOOLEAN requires a Boolean value");
+    }
+
+    @Test
     void rejectsEmptyFile() {
         var file = new MockMultipartFile("file", "empty.xlsx", null, new byte[0]);
 
