@@ -11,6 +11,8 @@
     (saveRequested)="saveWorkbook()"
     (newSheet)="addSheet()"
     (deleteSheet)="deleteSheet()"
+    (importSelected)="importSelected($event)"
+    (exportSelected)="exportSelected()"
   />
   @if (workbookService.currentSheet(); as sheet) {
     <app-spreadsheet

@@ -1,0 +1,73 @@
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.625rem;
+  background: #fff;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms, box-shadow 150ms;
+}
+
+.file-button:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  box-shadow: 0 2px 4px rgb(15 23 42 / 8%);
+}
+
+.file-button:active {
+  background: #e2e8f0;
+  box-shadow: none;
+}
+
+.file-button:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 3px;
+}
+
+.file-button-primary {
+  border-color: #047857;
+  background: #047857;
+  color: #fff;
+}
+
+.file-button-primary:hover {
+  border-color: #065f46;
+  background: #065f46;
+}
+
+.file-button-primary:active {
+  background: #064e3b;
+}
+
+.file-button-danger {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.file-button-danger:hover {
+  border-color: #fda4af;
+  background: #ffe4e6;
+}
+
+.file-button-danger:active {
+  background: #fecdd3;
+}
+
+.file-button-danger:focus-visible {
+  outline-color: #e11d48;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .file-button {
+    transition: none;
+  }
+}

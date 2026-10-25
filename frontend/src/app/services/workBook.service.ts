@@ -111,4 +111,17 @@ export class WorkBooksService {
       console.error('Workbook konnte nicht geladen werden', error);
     }
   }
+
+  newWorkBook(workbook:Workbook ): void {
+    try{
+      this.workBook.set(workbook);
+      this.index.set(0);
+    } catch (error) {
+      console.error('Workbook konnte nicht Importiert werden', error);
+    }
+  }
+
+  getWorkbook() : Workbook {
+    return this.workBook();
+  }
 }

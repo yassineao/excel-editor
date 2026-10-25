@@ -1,13 +1,37 @@
-<div class="overflow-x-auto" id="spreadsheet">
-  <table class="w-full min-w-160 border-collapse text-sm">
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+<div class="flex flex-wrap items-center gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3">
+  <label for="cell-reference" class="sr-only">Zelle</label>
+  <input id="cell-reference" type="text" [value]="selectedCellPosition()" readonly class="w-48 rounded-md border border-slate-200 bg-white px-3 py-2 text-center font-mono text-sm font-semibold text-emerald-700" />
+  <label for="formula" class="flex items-center gap-2 text-sm text-slate-500"><span aria-hidden="true" class="font-serif text-lg italic text-slate-400">fx</span><span class="sr-only">Formel</span></label>
+  <input #formulaInput id="formula" [disabled]="!selectedCell()" (input)="updateSelectedCell(formulaInput.value)"
+         (change)="commitChanges()" [value]="selectedCellValue()" type="text" placeholder="Wert oder Formel eingeben" class="min-w-40 flex-1 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-2 focus:outline-emerald-500/20" />
+</div>
+<div
+  id="spreadsheet"
+  class="w-full max-w-full h-[34rem] overflow-scroll bg-white [container-type:inline-size]
+    [&::-webkit-scrollbar]:w-4 [&::-webkit-scrollbar]:h-4
+    [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:border-[4px]
+    [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-slate-100
+    [&::-webkit-scrollbar-thumb]:rounded-2xl [&::-webkit-scrollbar-track]:bg-slate-100"
+>
+
+  <table
+    class="text-sm table-fixed border-separate border-spacing-0
+      [--column-width:max(7rem,calc((100cqw_-_7rem)/5))]
+      w-[calc(7rem_+_var(--column-count)*var(--column-width))]"
+    [style.--column-count]="cols().length"
+  >
+
     <caption class="sr-only">{{sheet().name}}mit  {{ sheet().columns }} Splaten und {{ sheet().rows }}  bearbeitbaren Zeilen</caption>
-    <thead class="bg-slate-100 text-slate-600">
+    <thead class="text-slate-700">
     <tr>
-      <th scope="col" class="w-28 min-w-28 border border-slate-200 p-2"><span class="sr-only">Zeile</span></th>
+      <th scope="col" class="sticky top-0 left-0 z-3 box-border h-12 w-28 min-w-28 border-r border-b border-black/15 bg-slate-100 p-2"><span aria-hidden="true" class="text-xs font-normal text-slate-400">#</span><span class="sr-only">Zeile</span></th>
       @for (col of cols(); track col) {
         <th
           scope="col"
-          class="group min-w-32 border border-slate-200 bg-slate-50 px-1 py-2 text-slate-600 transition-colors hover:bg-slate-100 focus-within:bg-slate-100"
+          class="group sticky top-0 z-2 box-border h-12 border-r border-b border-black/15 bg-slate-100 px-1 py-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-emerald-50 focus-within:bg-emerald-50"
+          [class.bg-emerald-100]="selectedCell()?.col === col"
+          [class.text-emerald-800]="selectedCell()?.col === col"
         >
           <div class="flex items-center justify-between gap-1">
             <button
@@ -46,10 +70,12 @@
     </thead>
     <tbody>
       @for (row of rows(); track row) {
-        <tr>
+        <tr class="bg-white">
           <th
             scope="row"
-            class="group border border-slate-200 bg-slate-50 px-1 py-2 text-slate-600 transition-colors hover:bg-slate-100 focus-within:bg-slate-100"
+            class="group sticky left-0 z-1 box-border h-12 border-r border-b border-black/15 bg-slate-100 px-1 py-2 text-xs text-slate-500 transition-colors hover:bg-emerald-50 focus-within:bg-emerald-50"
+            [class.bg-emerald-100]="selectedCell()?.row === row"
+            [class.text-emerald-800]="selectedCell()?.row === row"
           >
             <div class="flex justify-between gap-1">
               <!-- adding  row to the left-->
@@ -98,15 +124,18 @@
 
 
           @for (col of cols(); track col) {
-            <td class="border border-slate-200">
+            <td class="box-border h-12 border-r border-b border-black/10 p-0">
               <input
                 #cellInput
                 type="text"
                 [attr.aria-label]="'Cell ' + row + '-' + col"
-                class="w-full min-w-32 px-3 py-2"
-                [value]="sheet().cells.get(row + ',' + col)?.value ?? ''"
+                class="block h-full w-full min-w-0 bg-transparent px-4 py-2 text-slate-700 transition-colors hover:bg-slate-50 focus:bg-emerald-50/40 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600"
+                [value]="selectedCell()?.row === row && selectedCell()?.col === col
+                  ? selectedCellValue()
+                  : (sheet().cells.get(row + ',' + col)?.value ?? '')"
                 (input)="updateCell(row, col, cellInput.value)"
                 (change)="commitChanges()"
+                (focus)="selectCell(row, col)"
               >
             </td>
           }
@@ -115,4 +144,5 @@
 
     </tbody>
   </table>
+</div>
 </div>

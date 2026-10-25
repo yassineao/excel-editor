@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 
 import { Workbook } from './workbook';
 import { WorkBooksService } from '../../services/workBook.service';
+import { Type } from '../../models/type';
 
 describe('Workbook', () => {
   let component: Workbook;
@@ -47,7 +48,7 @@ describe('Workbook', () => {
   it('refreshes rows and shifted values after insertion and deletion', async () => {
     vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
     const service = TestBed.inject(WorkBooksService);
-    service.currentSheet()!.cells.set('0,0', { value: 'Keep' });
+    service.currentSheet()!.cells.set('0,0', { value: 'Keep', type: Type.STRING });
     const count = () => fixture.nativeElement.querySelectorAll('tbody tr').length;
     const initial = count();
     const insert: HTMLButtonElement = fixture.nativeElement.querySelector('tbody th button');
