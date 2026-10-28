@@ -19,12 +19,14 @@ describe('Excel import', () => {
     try {
       TestBed.inject(ExcelApi).importExcel(new File(['test'], 'test.xlsx')).subscribe(book => {
         service.newWorkBook(book);
+        expect(service.workbookId()).toBe(book.id);
         expect(service.currentSheet()?.id).toBe('1');
         expect(service.currentSheet()?.columns).toBe(3);
         expect(service.currentSheet()?.cells.get('0,0')).toEqual({ value: 'Hello', type: Type.STRING });
         service.saveWorkbook();
         const restored = new WorkBooksService();
         restored.loadWorkbook();
+        expect(restored.workbookId()).toBe(book.id);
         expect(restored.currentSheet()?.cells.get('0,0')?.value).toBe('Hello');
       });
 

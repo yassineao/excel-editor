@@ -2,6 +2,50 @@ import { WorkBooksService } from './workBook.service';
 import { SheetService } from './sheets.service';
 
 describe('Workbook sheet navigation', () => {
+  it('creates independent workbooks without replacing the active workbook', () => {
+    const service = new WorkBooksService();
+    const initialId = service.workbookId();
+    service.renameWorkBook('Budget');
+    service.addingSheet();
+    const created = service.createWorkbook(42);
+
+    expect(created.id).toBe(42);
+    expect(created.name).toBe('Workbook');
+    expect(created.sheets).toHaveLength(1);
+    expect(created.sheets[0]).not.toBe(service.sheets()[0]);
+    expect(service.workbookId()).toBe(initialId);
+    expect(service.name()).toBe('Budget');
+    expect(service.sheets()).toHaveLength(2);
+  });
+
+  it('tracks the replacement workbook ID and allows further edits', () => {
+    const service = new WorkBooksService();
+    expect(service.workbookId()).toBeGreaterThanOrEqual(1);
+    service.addingSheet();
+    service.nextSheet();
+    service.newWorkBook(service.createWorkbook(42));
+
+    expect(service.workbookId()).toBe(42);
+    expect(service.currentSheet()?.id).toBe('1');
+    service.renameWorkBook('Imported budget');
+    service.addingSheet();
+    service.updateSheet({ ...service.sheets()[0], name: 'Updated' });
+    service.deletingSheet('2');
+    expect(service.name()).toBe('Imported budget');
+    expect(service.currentSheet()?.name).toBe('Updated');
+    expect(service.sheets()).toHaveLength(1);
+    expect(service.workbookId()).toBe(42);
+  });
+
+  it('increments workbook IDs across service instances', () => {
+    const service = new WorkBooksService();
+    const initialId = service.workbookId();
+    expect(service.createWorkbook().id).toBe(initialId + 1);
+    expect(service.createWorkbook().id).toBe(initialId + 2);
+    const otherService = new WorkBooksService();
+    expect(otherService.workbookId()).toBe(initialId + 3);
+  });
+
   it('assigns sequential IDs to new sheets', () => {
     const service = new WorkBooksService();
     service.addingSheet();

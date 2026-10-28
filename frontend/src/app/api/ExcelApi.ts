@@ -20,7 +20,7 @@ export class ExcelApi {
 
     return this.http.post<ImportedWorkbook>(`${this.apiUrl}/excel/import`, formData).pipe(
       map((data) => ({
-        id: '1',
+        id: 1,
         name: data.name,
         sheets: data.sheets.map((sheet, index) => ({
           id: String(index + 1),

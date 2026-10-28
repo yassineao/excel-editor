@@ -46,6 +46,7 @@ describe('Workbook', () => {
   });
 
   it('refreshes rows and shifted values after insertion and deletion', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
     vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
     const service = TestBed.inject(WorkBooksService);
     service.currentSheet()!.cells.set('0,0', { value: 'Keep', type: Type.STRING });

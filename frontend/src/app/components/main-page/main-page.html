@@ -1,0 +1,58 @@
+<main class="mx-auto max-w-[1120px] px-8 pt-16 pb-8 [@media(max-width:800px)]:px-5 [@media(max-width:800px)]:pt-10 [@media(max-width:800px)]:pb-6">
+  <header class="[&_h1]:my-4 [&_h1]:text-[clamp(32px,5vw,54px)] [&_h1]:leading-[1.12] [&_h1]:font-semibold [&_h1]:tracking-[-.055em] [&_h1_span]:text-[#54a680] [&>p:last-child]:text-[#74837d] [&>p:last-child]:text-[15px] [&>p:last-child]:leading-[1.7]">
+    <p class="flex items-center gap-[9px] text-[#648075] text-[10px] font-[650] tracking-[.16em] [&_span]:size-1.5 [&_span]:rounded-full [&_span]:bg-[#3d9172]"><span></span> DEIN WORKSPACE</p>
+    <h1>Deine Arbeitsmappen<span>.</span></h1>
+    <p>Mehr Klarheit. Mehr Überblick. Ein Platz für deine Tabellen.</p>
+  </header>
+  <div class="grid mt-10 gap-7" [class]="userFiles().workbooks.length > 0 ? 'grid-cols-[380px_minmax(0,1fr)] [@media(max-width:800px)]:grid-cols-[minmax(0,1fr)]' : ''">
+    <section class="w-full max-w-[480px] p-7 overflow-hidden border border-[#d6e5dc] rounded-3xl bg-[#eef4ec] bg-[radial-gradient(ellipse_at_75%_20%,#e1f2df,transparent_65%)] shadow-[0_12px_36px_-24px_#204c3340] [@media(max-width:800px)]:max-w-none" aria-labelledby="import-title">
+      <div class="flex justify-between items-center text-[#547563] text-[9px] font-[650] tracking-[.16em]"><span>EXCEL EDITOR</span><span class="py-[5px] px-2 border border-[#cbdccc] rounded-md tracking-[.04em]">.xlsx / .xls</span></div>
+      <div class="relative h-[180px] mt-[15px] mb-2" aria-hidden="true">
+        <div class="absolute w-[118px] h-[140px] left-[calc(50%-59px)] top-5 rounded-[10px] bg-[#b9d5bd] [transform:translate(13px,-1px)_rotate(12deg)] border border-[#accab1]"></div>
+        <div class="absolute w-[118px] h-[140px] left-[calc(50%-59px)] top-5 rounded-[10px] py-[19px] px-[14px] bg-[#fffef9] [transform:rotate(-8deg)] border border-[#e0e7da] shadow-[0_14px_25px_-12px_#274e4266]"><div class="w-[37px] h-[5px] mb-4 rounded bg-[#679780]"></div><div class="h-[73px] border border-[#dbe5d8] rounded-[3px] bg-[repeating-linear-gradient(0deg,transparent_0_17px,#dbe5d8_17px_18px),repeating-linear-gradient(90deg,transparent_0_27px,#dbe5d8_27px_28px)]"></div><div class="absolute right-[-17px] bottom-4 grid place-items-center size-[43px] rounded-[11px] bg-[#24694d] text-white text-[24px] font-semibold shadow-[0_5px_12px_#204b4326] [transform:rotate(8deg)]">X</div></div>
+        <span class="absolute text-[#8aaa8b] font-light left-[17%] top-[35px] text-[24px]">+</span><span class="absolute text-[#8aaa8b] font-light right-[13%] bottom-[27px] text-[18px]">+</span>
+      </div>
+      <div class="[&_h2]:text-[34px] [&_h2]:leading-[1.12] [&_h2]:font-[550] [&_h2]:tracking-[-.04em] [&_h2]:my-3 [&>p:last-child]:max-w-[310px] [&>p:last-child]:text-[13px] [&>p:last-child]:leading-[1.8] [&>p:last-child]:text-[#63796d]">
+        <p class="text-[#657a6e] text-[9px] font-[650] tracking-[.16em]">DEIN NÄCHSTES PROJEKT</p>
+        <h2 id="import-title">Große Ideen.<br>Kleine Zellen.</h2>
+        <p>Bring deine Zahlen mit. Importiere deine Excel-Datei und mach sie zu deinem nächsten Projekt.</p>
+      </div>
+      <input #fileInput type="file" accept=".xlsx,.xls" hidden (change)="importFile(fileInput.files?.[0])" />
+      <button class="flex w-full items-center justify-center gap-2.5 mt-[25px] py-[15px] px-[14px] rounded-[10px] text-white bg-[#205d45] text-[12px] font-semibold cursor-pointer transition-[background,transform] duration-200 ease-[ease] shadow-[0_4px_10px_#205d451a] [&_svg]:size-[18px] [&_svg]:shrink-0 [&>span]:ml-auto [&>span]:text-[18px] hover:bg-[#164b36] hover:[transform:translateY(-1px)] disabled:opacity-60 disabled:cursor-wait disabled:[transform:none] motion-reduce:transition-none motion-reduce:hover:[transform:none] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]" type="button" (click)="fileInput.click()" [disabled]="importing()">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4m-4 4 4-4 4 4M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" /></svg>
+        {{ importing() ? 'Wird importiert …' : 'Excel-Datei importieren' }}
+        <span aria-hidden="true">↗</span>
+      </button>
+      <p class="text-center mt-3 text-[10px] text-[#63776a]" aria-live="polite">{{ importing() ? 'Deine Datei wird hochgeladen.' : 'Datei von deinem Gerät auswählen' }}</p>
+      <button class="flex w-full items-center justify-center gap-2.5 mt-4 py-[15px] px-[14px] border border-[#b8cebd] rounded-[10px] bg-[#fffef9] text-[#205d45] text-[12px] font-semibold cursor-pointer transition-colors duration-200 hover:bg-[#e1eddf] disabled:opacity-60 disabled:cursor-wait motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]" type="button" (click)="createWorkbook()" [disabled]="importing()">
+        <svg class="size-[18px] shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14" /></svg>
+        Neue Arbeitsmappe
+      </button>
+      @if (error()) { <p role="alert" class="mt-3 text-[12px] text-[#a52c36]">{{ error() }}</p> }
+    </section>
+    @if (userFiles().workbooks.length > 0) {
+      <section class="min-w-0 flex flex-col pt-7 px-6 pb-[18px] border border-[#e2e8e3] rounded-3xl bg-[#ffffffb3] shadow-[0_12px_36px_-28px_#193c3326] [@media(max-width:800px)]:min-h-[280px]" aria-labelledby="files-title">
+        <header class="flex items-center justify-between gap-3 [&_h2]:mt-[9px] [&_h2]:text-[22px] [&_h2]:tracking-[-.035em] [&_h2]:font-[550]">
+          <div><p class="text-[#657a6e] text-[9px] font-[650] tracking-[.16em]">DEINE SAMMLUNG</p><h2 id="files-title">Bereit, wenn du es bist.</h2></div>
+          <span class="grid place-items-center min-w-[31px] h-[31px] px-2 rounded-full bg-[#edf3ed] text-[12px] text-[#547563]">{{ userFiles().workbooks.length }}</span>
+        </header>
+        <div class="flex justify-between mt-8 mb-2 px-2.5 pb-3 border-b border-[#e9ede8] text-[8px] text-[#65766b] font-[650] tracking-[.16em]"><span>ARBEITSMAPPE</span><span>ÖFFNEN</span></div>
+        <ul class="list-none px-1 m-0 max-h-[330px] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#c4d3c8_transparent] [&_li+li]:border-t [&_li+li]:border-[#f0f2ee] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]" tabindex="0" aria-label="Vorhandene Arbeitsmappen">
+          @for (workbook of userFiles().workbooks; track workbook.id) {
+            <li class="flex items-center gap-2"><button class="min-w-0 flex-1 flex items-center gap-[13px] py-4 px-2 rounded-[10px] text-left cursor-pointer transition-[background] duration-200 ease-[ease] hover:bg-[#f0f6ef] motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]" type="button" (click)="openWorkbook(workbook.id)">
+              <span class="grid place-items-center w-[42px] h-[46px] shrink-0 border border-[#e0e9de] rounded-[10px] bg-[#f0f5ee] text-[#648c71] [&_svg]:size-[22px]" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5Z" /><path d="M14 3v5h5M8 12h8M8 16h8M12 12v7" /></svg></span>
+              <span class="min-w-0 flex-1"><span class="block truncate text-[13px] font-[550]">{{ workbook.name }}</span><span class="block mt-[5px] text-[11px] text-[#687a6d]">{{ workbook.sheets.length }} {{ workbook.sheets.length === 1 ? 'Tabellenblatt' : 'Tabellenblätter' }}</span></span>
+              <span class="text-[#64816d] text-[19px]" aria-hidden="true">↗</span>
+            </button>
+              <button class="shrink-0 rounded-lg px-3 py-3 text-[11px] text-[#a52c36] cursor-pointer transition-colors hover:bg-[#fbecee] motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a52c36]" type="button" [attr.aria-label]="workbook.name + ' löschen'" (click)="deleteWorkbook(workbook.id)">
+                <span>Löschen</span>
+              </button>
+            </li>
+          }
+        </ul>
+        <p class="flex items-center gap-2 mt-auto pt-[22px] px-1 text-[10px] leading-[1.6] text-[#687a6d] [&_span]:shrink-0 [&_span]:size-[5px] [&_span]:rounded-full [&_span]:bg-[#3d9172]"><span></span>Alles an einem Ort. Bereit für den nächsten Schritt.</p>
+      </section>
+    }
+  </div>
+  <footer class="flex justify-between gap-4 mt-9 pt-5 border-t border-[#e0e6df] text-[#687a6d] text-[8px] font-[650] tracking-[.16em] [&_span:last-child]:text-[11px] [&_span:last-child]:tracking-normal [&_span:last-child]:font-normal"><span>RAUM FÜR DEINE IDEEN</span><span>Zelle für Zelle.</span></footer>
+</main>

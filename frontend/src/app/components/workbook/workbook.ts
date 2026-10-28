@@ -1,9 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import { WorkBooksService } from '../../services/workBook.service';
 import { Spreadsheet } from '../spreadsheet/spreadsheet';
 import { Toolbar } from '../toolbar/toolbar';
 import { Sheet } from '../../models/sheets.model';
 import { ExcelApi } from '../../api/ExcelApi';
+import { Router } from '@angular/router';
+import { Workbook } from '../../models/workBook.model';
+
 
 @Component({
   selector: 'app-workbook',
@@ -11,19 +14,18 @@ import { ExcelApi } from '../../api/ExcelApi';
   templateUrl: './workbook.html',
   styleUrl: './workbook.css',
 })
-export class Workbook implements OnInit {
+export class WorkbookComponent {
   protected readonly workbookService = inject(WorkBooksService);
   protected readonly excelApi = inject(ExcelApi);
-  get workbook() {
-    return this.workbookService.getWorkbook();
-  }
+  readonly workbook = input.required<Workbook | undefined>() ;
+  save = output<void>();
 
-  ngOnInit(): void {
-    this.workbookService.loadWorkbook();
+  openWorkbook(id: number): void {
+    this.workbook();
   }
 
   saveWorkbook(): void {
-    this.workbookService.saveWorkbook();
+    this.save.emit();
   }
 
   addSheet(): void {
@@ -34,6 +36,7 @@ export class Workbook implements OnInit {
     }
     this.saveWorkbook();
   }
+  //open workbook id
 
   deleteSheet(): void {
     const sheet = this.workbookService.currentSheet();
@@ -68,27 +71,29 @@ export class Workbook implements OnInit {
   }
 
   exportSelected(): void {
-    const workbook = this.workbook;
-    this.excelApi.exportExcel(workbook).subscribe({
-      next: (blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = workbook.name.toLowerCase().endsWith('.xlsx')
-          ? workbook.name
-          : `${workbook.name}.xlsx`;
+    const workbook = this.workbook() ;
+    if (!workbook) return;
+      this.excelApi.exportExcel(workbook).subscribe({
+        next: (blob: Blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = workbook.name.toLowerCase().endsWith('.xlsx')
+            ? workbook.name
+            : `${workbook.name}.xlsx`;
 
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url));
-        window.alert(`Die Arbeitsmappe wurde erfolgreich heruntergeladen.`);
-      },
-      error: (error) => {
-        window.alert(`Die Arbeitsmappe konnte nicht exportiert werden.`);
-        console.error('Export failed', error);
-      },
-    });
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url));
+          window.alert(`Die Arbeitsmappe wurde erfolgreich heruntergeladen.`);
+        },
+        error: (error) => {
+          window.alert(`Die Arbeitsmappe konnte nicht exportiert werden.`);
+          console.error('Export failed', error);
+        },
+      });
+
   }
 
   onSheetChanged(sheet: Sheet): void {

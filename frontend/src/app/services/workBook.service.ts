@@ -8,13 +8,21 @@ import { SheetService } from './sheets.service';
   providedIn: 'root',
 })
 export class WorkBooksService {
-  private readonly workBook = signal<Workbook>({
-    id: '1',
-    name: 'Workbook',
-    sheets: [SheetService.createSheet('1')],
-  });
+  private static nextWorkbookId = 1;
 
   private readonly index = signal(0);
+  private readonly workBook = signal<Workbook>(this.createWorkbook());
+  readonly workbookId = computed(() => this.workBook().id);
+
+  createWorkbook(id: number = WorkBooksService.nextWorkbookId): Workbook {
+    WorkBooksService.nextWorkbookId = Math.max(WorkBooksService.nextWorkbookId, id + 1);
+    return {
+      id,
+      name: 'Workbook',
+      sheets: [SheetService.createSheet('1')],
+    };
+  }
+
   readonly name = computed(() => this.workBook().name);
   readonly sheets = computed(() => this.workBook().sheets);
   readonly currentSheet = computed(() => this.workBook().sheets.at(this.index()));
@@ -71,57 +79,18 @@ export class WorkBooksService {
     this.workBook.update((book) => ({ ...book, name }));
   }
 
-  // saving workbook on local storage
-  saveWorkbook(): void {
-    if (typeof localStorage === 'undefined') return;
-    const workBook = this.workBook();
 
-    const data = {
-      ...workBook,
-      sheets: workBook.sheets.map((sheet) => ({
-        ...sheet,
-        cells: Array.from(sheet.cells.entries()),
-      })),
-    };
-
-    localStorage.setItem('workbook', JSON.stringify(data));
-  }
-
-  //loading workbook from local storage
-  loadWorkbook(): void {
-    if (typeof localStorage === 'undefined') return;
-    const saved = localStorage.getItem('workbook');
-
-    if (!saved) return;
-
+  newWorkBook(workbook: Workbook): void {
     try {
-      const data = JSON.parse(saved);
-
-      const workbook = {
-        ...data,
-        sheets: data.sheets.map((sheet: any) => ({
-          ...sheet,
-          cells: new Map<string, Cell>(sheet.cells),
-        })),
-      };
-
-      this.workBook.set(workbook);
-      this.index.set(0);
-    } catch (error) {
-      console.error('Workbook konnte nicht geladen werden', error);
-    }
-  }
-
-  newWorkBook(workbook:Workbook ): void {
-    try{
       this.workBook.set(workbook);
       this.index.set(0);
     } catch (error) {
       console.error('Workbook konnte nicht Importiert werden', error);
     }
+
   }
 
-  getWorkbook() : Workbook {
+  getWorkbook(): Workbook {
     return this.workBook();
   }
 }

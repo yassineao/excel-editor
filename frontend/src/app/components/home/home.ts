@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Workbook } from '../workbook/workbook';
+import { WorkbookComponent } from '../workbook/workbook';
 
 @Component({
   selector: 'app-home',
-  imports: [Workbook],
+  imports: [WorkbookComponent],
   templateUrl: './home.html',
 })
 export class Home {}
