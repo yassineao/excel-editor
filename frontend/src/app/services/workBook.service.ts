@@ -31,6 +31,7 @@ export class WorkBooksService {
   }
 
   saveWorkbook(): void {
+    this.userFileService.updateUserFiles(this.workBook());
     this.userFileService.saveUserFiles();
   }
   nextSheet(): void {
@@ -49,12 +50,14 @@ export class WorkBooksService {
   }
 
   addingSheet(sheet?: Sheet): void {
+    console.log('workbookL', this.workBook());
     this.workBook.update((book) => {
       const highestId = book.sheets.reduce((highest, existing) => {
         const id = Number(existing.id);
         return Number.isSafeInteger(id) && id > highest ? id : highest;
       }, 0);
       const newSheet = sheet ?? SheetService.createSheet(String(highestId + 1));
+      console.log("workbook",this.workBook());
       this.saveWorkbook();
       return { ...book, sheets: [...book.sheets, newSheet] };
     });

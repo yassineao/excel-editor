@@ -32,6 +32,18 @@ export class UserFilesService {
   //check changes
 //  hasChanges = computed(() => this.workbookService.workBook() !== this.userFiles().workbooks.at(this.workbookService.workbookId()));
 
+// Replace the matching workbook while preserving the others.
+  updateUserFiles(workbook: Workbook): void {
+    this.userFiles.update((userFiles) => ({
+      ...userFiles,
+      workbooks: userFiles.workbooks.map((existing) =>
+        existing.id === workbook.id ? workbook : existing
+      ),
+    }));
+
+    this.saveUserFiles();
+  }
+
   //delete workbook
   deleteWorkbook(id: number): void {
     this.userFiles.update((userFiles) => ({
@@ -43,6 +55,7 @@ export class UserFilesService {
 
   // save workbooks
   saveUserFiles(): void {
+
     if (typeof localStorage === 'undefined') return;
     const userFiles = this.userFiles();
 
