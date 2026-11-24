@@ -18,6 +18,27 @@ export class Toolbar {
   readonly deleteSheet = output<void>();
   readonly sheets = input<Sheet[]>();
   readonly sheetSelected = output<string>();
+  readonly sheetRenamed = output<{ id: string; name: string }>();
+  readonly editingSheetId = signal<string | null>(null);
+
+  startRename(sheet: Sheet, input: HTMLInputElement): void {
+    this.editingSheetId.set(sheet.id);
+    input.focus();
+    input.select();
+  }
+
+  finishRename(sheet: Sheet, input: HTMLInputElement): void {
+    if (this.editingSheetId() !== sheet.id) return;
+    this.editingSheetId.set(null);
+    const name = input.value.trim();
+    if (name && name !== sheet.name) {
+      this.sheetRenamed.emit({ id: sheet.id, name });
+    } else {
+      input.value = sheet.name;
+    }
+  }
+
+
 
   readonly importSelected = output<File>();
   readonly exportSelected = output<void>();

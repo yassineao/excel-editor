@@ -24,6 +24,34 @@ export class WorkbookComponent {
     this.workbookService.saveWorkbook();
   }
 
+  renameSheet(event: { id: string; name: string }): void {
+    const sheet = this.workbookService.sheets().find(sheet => sheet.id === event.id);
+    const name = event.name.trim();
+    if (sheet && name) {
+      this.workbookService.updateSheet({ ...sheet, name });
+    }
+  }
+
+  renameWorkbook(input: HTMLInputElement): void {
+    const name = input.value.trim();
+    if (name && name !== this.workbookService.name()) {
+      this.workbookService.renameWorkBook(name);
+    }
+    input.value = this.workbookService.name();
+  }
+
+  renameCurrentSheet(input: HTMLInputElement): void {
+    const sheet = this.workbookService.currentSheet();
+    if (!sheet) return;
+    this.renameSheet({ id: sheet.id, name: input.value });
+    input.value = this.workbookService.currentSheet()?.name ?? sheet.name;
+  }
+
+  cancelRename(input: HTMLInputElement, name: string): void {
+    input.value = name;
+    input.blur();
+  }
+
   addSheet(): void {
     this.workbookService.addingSheet();
     const latestSheet = this.workbookService.sheets().at(-1);

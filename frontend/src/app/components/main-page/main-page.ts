@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { ExcelApi } from '../../api/ExcelApi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
+import { FeaturesComponent } from '../features/features';
 @Component({
   selector: 'main-page',
+  imports: [FeaturesComponent],
   templateUrl: 'main-page.html',
   host: { class: 'block text-[#193c33]' },
 })

@@ -1,6 +1,6 @@
 import { Cell } from '../models/cells.model';
 import { Sheet } from '../models/sheets.model';
-import { getCellType, Type } from '../models/type';
+import { getCellType, TypeModel } from '../models/type.model';
 export class CellsService {
   constructor(private readonly sheet: Sheet) {}
 
@@ -11,8 +11,8 @@ export class CellsService {
   updateCell(
     row: number,
     col: number,
-    cell: Omit<Cell, 'type'> & { type?: Type },
-    type: Type = cell.type ?? getCellType(cell.value),
+    cell: Omit<Cell, 'type'> & { type?: TypeModel },
+    type: TypeModel = cell.type ?? getCellType(cell.value),
   ): void {
     const key = this.key(row, col);
     if (cell.value === '' || cell.value === null) {

@@ -3,7 +3,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ExcelApi } from './ExcelApi';
 import { WorkBooksService } from '../services/workBook.service';
-import { Type } from '../models/type';
+import { UserFilesService } from '../services/UserFiles.service';
+import { TypeModel } from '../models/type.model';
 
 describe('Excel import', () => {
   it('converts JSON cells to Maps that can be saved and reloaded', () => {
@@ -11,23 +12,24 @@ describe('Excel import', () => {
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     const http = TestBed.inject(HttpTestingController);
-    const service = new WorkBooksService();
-    service.addingSheet();
-    service.nextSheet();
-    const saved = localStorage.getItem('workbook');
+    const service = TestBed.inject(WorkBooksService);
+    const files = TestBed.inject(UserFilesService);
+    const saved = localStorage.getItem('userFiles');
 
     try {
       TestBed.inject(ExcelApi).importExcel(new File(['test'], 'test.xlsx')).subscribe(book => {
+        files.addWorkbooktoUserFiles(book);
         service.newWorkBook(book);
         expect(service.workbookId()).toBe(book.id);
         expect(service.currentSheet()?.id).toBe('1');
         expect(service.currentSheet()?.columns).toBe(3);
-        expect(service.currentSheet()?.cells.get('0,0')).toEqual({ value: 'Hello', type: Type.STRING });
+        expect(service.currentSheet()?.cells.get('0,0')).toEqual({ value: 'Hello', type: TypeModel.STRING });
         service.saveWorkbook();
-        const restored = new WorkBooksService();
-        restored.loadWorkbook();
-        expect(restored.workbookId()).toBe(book.id);
-        expect(restored.currentSheet()?.cells.get('0,0')?.value).toBe('Hello');
+        const restored = TestBed.runInInjectionContext(() => new UserFilesService());
+        restored.loadUserFiles();
+        const restoredBook = restored.userFiles().workbooks.find(workbook => workbook.id === book.id);
+        expect(restoredBook).toBeDefined();
+        expect(restoredBook?.sheets[0].cells.get('0,0')?.value).toBe('Hello');
       });
 
       http.expectOne('http://localhost:8080/excel/import').flush({
@@ -36,8 +38,8 @@ describe('Excel import', () => {
       });
       http.verify();
     } finally {
-      if (saved === null) localStorage.removeItem('workbook');
-      else localStorage.setItem('workbook', saved);
+      if (saved === null) localStorage.removeItem('userFiles');
+      else localStorage.setItem('userFiles', saved);
     }
   });
 });

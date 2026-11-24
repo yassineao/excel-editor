@@ -5,8 +5,8 @@ export class SheetService {
     return {
       id,
       name,
-      rows: 5,
-      columns: 4,
+      rows: 1000,
+      columns: 26,
       cells: new Map<string, Cell>(),
     };
   }

@@ -1,13 +1,28 @@
 <section id="spreadsheet" aria-labelledby="workbook-title" class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
   <header class="border-b border-slate-200 px-5 py-4">
-    <h2 id="workbook-title" class="text-lg font-semibold">{{ workbookService.name() }}</h2>
-    <p class="text-sm text-slate-500">Tabelle 1</p>
+    <h2 id="workbook-title" class="text-lg font-semibold">
+      <input #workbookName type="text" aria-label="Arbeitsmappe umbenennen"
+             title="Zum Umbenennen klicken" [value]="workbookService.name()"
+             class="w-full rounded-md bg-transparent px-2 py-1 border-0 outline-none shadow-none transition-colors duration-200 hover:bg-slate-50 focus:bg-emerald-50/60 focus:outline-none motion-reduce:transition-none"
+             (blur)="renameWorkbook(workbookName)"
+             (keydown.enter)="$event.preventDefault(); workbookName.blur()"
+             (keydown.escape)="$event.preventDefault(); cancelRename(workbookName, workbookService.name())" />
+    </h2>
+    @if (workbookService.currentSheet(); as currentSheet) {
+      <input #currentSheetName type="text" aria-label="Aktuelles Tabellenblatt umbenennen"
+             title="Zum Umbenennen klicken" [value]="currentSheet.name"
+             class="w-full rounded-md bg-transparent px-2 py-1 text-sm text-slate-500 border-0 outline-none shadow-none transition-colors duration-200 hover:bg-slate-50 focus:bg-emerald-50/60 focus:text-slate-900 focus:outline-none motion-reduce:transition-none"
+             (blur)="renameCurrentSheet(currentSheetName)"
+             (keydown.enter)="$event.preventDefault(); currentSheetName.blur()"
+             (keydown.escape)="$event.preventDefault(); cancelRename(currentSheetName, currentSheet.name)" />
+    }
   </header>
 
   <app-toolbar
     class="block"
     [sheets]="workbookService.sheets()"
     (sheetSelected)="workbookService.selectSheet($event)"
+    (sheetRenamed)="renameSheet($event)"
     (saveRequested)="saveWorkbook()"
     (newSheet)="addSheet()"
     (deleteSheet)="deleteSheet()"
@@ -23,7 +38,7 @@
   }
 
   <div class="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-5 py-3 text-sm">
-    <span class="rounded-md bg-emerald-100 px-3 py-1 font-medium text-emerald-800">Tabelle 1</span>
-    <span class="text-slate-500">5 Zeilen · 4 Spalten</span>
+    <span class="rounded-md bg-emerald-100 px-3 py-1 font-medium text-emerald-800">{{ workbookService.currentSheet()?.name }}</span>
+    <span class="text-slate-500">{{ workbookService.currentSheet()?.rows }} Zeilen · {{ workbookService.currentSheet()?.columns }} Spalten</span>
   </div>
 </section>

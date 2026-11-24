@@ -1,7 +1,40 @@
+<section aria-labelledby="hero-title" class="relative w-full overflow-hidden border-b border-[#dce6dd] bg-[#f1f5ee]">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_30%,#d8e9d5,transparent_55%)]" aria-hidden="true"></div>
+  <div class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 sm:px-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-12 lg:py-20">
+    <div>
+      <p class="mb-6 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-[#547563]"><span class="size-1.5 rounded-full bg-[#3d9172]"></span>Einfach. Übersichtlich. Dein Workspace.</p>
+      <h1 id="hero-title" class="text-[clamp(36px,4.5vw,64px)] font-semibold leading-[1.06] tracking-[-.055em] text-[#193c33]">Deine Zahlen.<br>Deine Ideen.<br><span class="text-[#4c916d]">Alles an einem Ort.</span></h1>
+      <p class="mt-6 max-w-md text-[15px] leading-7 text-[#63796d]">Weniger suchen, mehr machen. Erstelle eine Arbeitsmappe oder öffne deine Excel-Datei und bring Ordnung in deine Tabellen.</p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <button type="button" (click)="createWorkbook()" [disabled]="importing()" class="inline-flex items-center gap-3 rounded-xl bg-[#205d45] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#164b36] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Arbeitsmappe erstellen <span aria-hidden="true">↗</span></button>
+        <a href="#workspace" class="inline-flex items-center gap-2 rounded-xl border border-[#cbdaca] bg-white/60 px-5 py-3.5 text-sm font-semibold text-[#205d45] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Datei importieren <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="mt-5 text-xs text-[#748578]">Dein nächstes Projekt beginnt mit einer Zelle.</p>
+    </div>
+    <div aria-hidden="true" class="relative mx-auto w-full max-w-lg select-none lg:pt-6">
+      <div class="absolute inset-x-6 bottom-0 top-8 rotate-3 rounded-2xl border border-[#c5d9c5] bg-[#dbe8d8]"></div>
+      <div class="relative overflow-hidden rounded-2xl border border-[#d1dfcf] bg-[#fffefb] shadow-[0_24px_60px_-24px_#315a4440]">
+        <div class="flex items-center justify-between border-b border-[#e3e9df] px-5 py-4">
+          <div class="flex items-center gap-3"><span class="grid size-8 place-items-center rounded-lg bg-[#205d45] text-sm font-bold text-white">X</span><span class="text-sm font-semibold text-[#294b3a]">Mein nächstes Projekt</span></div>
+          <span class="text-[10px] text-[#7a8e7c]">VORSCHAU</span>
+        </div>
+        <div class="flex items-center gap-4 border-b border-[#e3e9df] bg-[#f6f8f2] px-5 py-3 text-xs text-[#6b806f]"><span class="rounded border border-[#dce5d8] bg-white px-3 py-1">B4</span><span class="italic">fx</span><span class="text-[#365c43]">Deine nächste große Idee</span></div>
+        <div class="grid grid-cols-[36px_1.4fr_1fr_1fr] text-xs [&>span]:border-b [&>span]:border-r [&>span]:border-[#e8ede4] [&>span]:px-3 [&>span]:py-4">
+          <span class="bg-[#f6f8f2]"></span><span class="bg-[#f6f8f2] text-center text-[#82917d]">A</span><span class="bg-[#f6f8f2] text-center text-[#82917d]">B</span><span class="bg-[#f6f8f2] text-center text-[#82917d]">C</span>
+          <span class="text-[#94a08e]">1</span><span class="font-semibold">Projekt</span><span class="font-semibold">Status</span><span class="font-semibold">Fortschritt</span>
+          <span class="text-[#94a08e]">2</span><span>Neue Ideen</span><span class="text-[#4c916d]">Bereit</span><span><span class="mt-1 block h-1.5 w-full rounded-full bg-[#accbaa]"></span></span>
+          <span class="text-[#94a08e]">3</span><span>Planung</span><span class="text-[#4c916d]">In Arbeit</span><span><span class="mt-1 block h-1.5 w-2/3 rounded-full bg-[#accbaa]"></span></span>
+          <span class="text-[#94a08e]">4</span><span>Dein nächster Schritt</span><span class="bg-[#edf5e9] outline outline-2 -outline-offset-2 outline-[#5a956b]"></span><span></span>
+        </div>
+        <div class="flex items-center gap-5 bg-[#f6f8f2] px-5 py-3 text-xs"><span class="rounded-md bg-white px-4 py-2 font-semibold text-[#205d45] shadow-sm">Übersicht</span><span class="text-[#81907b]">+</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 <main class="mx-auto max-w-[1120px] px-8 pt-16 pb-8 [@media(max-width:800px)]:px-5 [@media(max-width:800px)]:pt-10 [@media(max-width:800px)]:pb-6">
-  <header class="[&_h1]:my-4 [&_h1]:text-[clamp(32px,5vw,54px)] [&_h1]:leading-[1.12] [&_h1]:font-semibold [&_h1]:tracking-[-.055em] [&_h1_span]:text-[#54a680] [&>p:last-child]:text-[#74837d] [&>p:last-child]:text-[15px] [&>p:last-child]:leading-[1.7]">
+  <header id="workspace" class="scroll-mt-8 [&_h2]:my-4 [&_h2]:text-[clamp(28px,4vw,40px)] [&_h2]:leading-[1.12] [&_h2]:font-semibold [&_h2]:tracking-[-.055em] [&_h2_span]:text-[#54a680] [&>p:last-child]:text-[#74837d] [&>p:last-child]:text-[15px] [&>p:last-child]:leading-[1.7]">
     <p class="flex items-center gap-[9px] text-[#648075] text-[10px] font-[650] tracking-[.16em] [&_span]:size-1.5 [&_span]:rounded-full [&_span]:bg-[#3d9172]"><span></span> DEIN WORKSPACE</p>
-    <h1>Deine Arbeitsmappen<span>.</span></h1>
+    <h2>Deine Arbeitsmappen<span>.</span></h2>
     <p>Mehr Klarheit. Mehr Überblick. Ein Platz für deine Tabellen.</p>
   </header>
   <div class="grid mt-10 gap-7" [class]="userFiles().workbooks.length > 0 ? 'grid-cols-[380px_minmax(0,1fr)] [@media(max-width:800px)]:grid-cols-[minmax(0,1fr)]' : ''">
@@ -55,4 +88,33 @@
     }
   </div>
   <footer class="flex justify-between gap-4 mt-9 pt-5 border-t border-[#e0e6df] text-[#687a6d] text-[8px] font-[650] tracking-[.16em] [&_span:last-child]:text-[11px] [&_span:last-child]:tracking-normal [&_span:last-child]:font-normal"><span>RAUM FÜR DEINE IDEEN</span><span>Zelle für Zelle.</span></footer>
+  <app-features class="relative isolate block" />
+  <section id="info" aria-labelledby="info-title" class="mb-10 scroll-mt-8 rounded-3xl border border-[#d6e5dc] bg-[#fffefb] p-6 sm:p-10">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+      <div>
+        <p class="mb-4 text-[10px] font-semibold uppercase tracking-[.16em] text-[#547563]">Gut zu wissen</p>
+        <h2 id="info-title" class="text-3xl font-semibold leading-tight tracking-[-.04em] text-[#193c33]">Dein Einstieg.<br>Ganz unkompliziert.</h2>
+        <p class="mt-4 text-sm leading-7 text-[#63796d]">Neue Ideen brauchen keinen langen Anlauf. Hier findest du die wichtigsten Infos für deine ersten Schritte.</p>
+        <a href="#workspace" class="mt-6 inline-flex items-center gap-2 rounded-lg text-sm font-semibold text-[#205d45] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Zum Arbeitsbereich <span aria-hidden="true">↑</span></a>
+      </div>
+      <div class="divide-y divide-[#e3e9df]">
+        <details open class="group pb-5">
+          <summary class="cursor-pointer rounded text-sm font-semibold text-[#193c33] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Wie starte ich?</summary>
+          <p class="mt-3 text-sm leading-7 text-[#63796d]">Wähle „Neue Arbeitsmappe“ für eine leere Tabelle oder „Excel-Datei importieren“ für eine vorhandene Datei. Deine Arbeitsmappen findest du anschließend in deiner Sammlung.</p>
+        </details>
+        <details class="py-5">
+          <summary class="cursor-pointer rounded text-sm font-semibold text-[#193c33] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Welche Dateien kann ich importieren?</summary>
+          <p class="mt-3 text-sm leading-7 text-[#63796d]">Du kannst Excel-Dateien im Format .xlsx und .xls auswählen. Für den Import wird deine Datei an den Server übertragen; dieser muss erreichbar sein.</p>
+        </details>
+        <details class="py-5">
+          <summary class="cursor-pointer rounded text-sm font-semibold text-[#193c33] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Wo bleiben meine Arbeitsmappen?</summary>
+          <p class="mt-3 text-sm leading-7 text-[#63796d]">Deine Sammlung wird in diesem Browser gespeichert und beim nächsten Besuch wieder geladen. In einem anderen Browser oder auf einem anderen Gerät ist sie nicht automatisch verfügbar. Wenn du die Website-Daten löschst, wird auch die gespeicherte Sammlung entfernt.</p>
+        </details>
+        <details class="pt-5">
+          <summary class="cursor-pointer rounded text-sm font-semibold text-[#193c33] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#347e57]">Kann ich mehrere Tabellenblätter nutzen?</summary>
+          <p class="mt-3 text-sm leading-7 text-[#63796d]">Ja. Füge innerhalb einer Arbeitsmappe weitere Blätter hinzu und wechsle zwischen ihnen. Nicht mehr benötigte Blätter kannst du entfernen; mindestens ein Tabellenblatt bleibt erhalten.</p>
+        </details>
+      </div>
+    </div>
+  </section>
 </main>

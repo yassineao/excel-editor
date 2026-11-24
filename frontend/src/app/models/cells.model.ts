@@ -1,9 +1,9 @@
-import { Type } from './type';
+import { TypeModel } from './type.model';
 
 
 export interface Cell {
   value: string | number | boolean | null;
-  type: Type;
+  type: TypeModel;
   // Bold: boolean;
   // Italic: boolean;
   // Strike: boolean;

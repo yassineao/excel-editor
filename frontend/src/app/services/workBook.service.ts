@@ -4,6 +4,7 @@ import { Sheet } from '../models/sheets.model';
 import { Cell } from '../models/cells.model';
 import { SheetService } from './sheets.service';
 import { UserFilesService } from './UserFiles.service';
+import { ExcelApi } from '../api/ExcelApi';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class WorkBooksService {
   readonly workbookId = computed(() => this.workBook().id);
 
   protected readonly userFileService = inject(UserFilesService);
+  protected excelApi = inject(ExcelApi);
 
   readonly name = computed(() => this.workBook().name);
   readonly sheets = computed(() => this.workBook().sheets);
@@ -99,5 +101,9 @@ export class WorkBooksService {
     } catch (error) {
       console.error('Workbook konnte nicht Importiert werden', error);
     }
+  }
+
+  loadWorkbook() {
+    this.excelApi.exportExcel(this.workBook());
   }
 }

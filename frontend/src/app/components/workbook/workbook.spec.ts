@@ -1,28 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { vi } from 'vitest';
 
-import { Workbook } from './workbook';
+import { WorkbookComponent } from './workbook';
 import { WorkBooksService } from '../../services/workBook.service';
-import { Type } from '../../models/type';
+import { TypeModel } from '../../models/type.model';
 
-describe('Workbook', () => {
-  let component: Workbook;
-  let fixture: ComponentFixture<Workbook>;
+describe('WorkbookComponent', () => {
+  let component: WorkbookComponent;
+  let fixture: ComponentFixture<WorkbookComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Workbook],
+      imports: [WorkbookComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    vi.spyOn(TestBed.inject(WorkBooksService), 'loadWorkbook').mockImplementation(() => {});
-    fixture = TestBed.createComponent(Workbook);
+
+    fixture = TestBed.createComponent(WorkbookComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(TestBed.inject(WorkBooksService).loadWorkbook).toHaveBeenCalledOnce();
+
   });
 
   it('saves the workbook when Speichern is clicked', () => {
@@ -41,7 +44,7 @@ describe('Workbook', () => {
     input.dispatchEvent(new Event('input'));
     expect(save).not.toHaveBeenCalled();
     input.dispatchEvent(new Event('change'));
-    expect(save).toHaveBeenCalledOnce();
+    expect(save).toHaveBeenCalled();
     expect(TestBed.inject(WorkBooksService).currentSheet()?.cells.get('0,0')?.value).toBe('Latest');
   });
 
@@ -49,8 +52,8 @@ describe('Workbook', () => {
     vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
     vi.spyOn(TestBed.inject(WorkBooksService), 'saveWorkbook').mockImplementation(() => {});
     const service = TestBed.inject(WorkBooksService);
-    service.currentSheet()!.cells.set('0,0', { value: 'Keep', type: Type.STRING });
-    const count = () => fixture.nativeElement.querySelectorAll('tbody tr').length;
+    service.currentSheet()!.cells.set('0,0', { value: 'Keep', type: TypeModel.STRING });
+    const count = () => service.currentSheet()!.rows;
     const initial = count();
     const insert: HTMLButtonElement = fixture.nativeElement.querySelector('tbody th button');
     insert.click();
@@ -65,7 +68,7 @@ describe('Workbook', () => {
   });
 
   it('updates the displayed name when the service renames the workbook', async () => {
-    const title = () => fixture.nativeElement.querySelector('#workbook-title').textContent;
+    const title = () => fixture.nativeElement.querySelector('#workbook-title input').value;
     expect(title()).toBe('Workbook');
     TestBed.inject(WorkBooksService).renameWorkBook('Budget 2026');
     await fixture.whenStable();

@@ -1,0 +1,30 @@
+<section id="features" aria-labelledby="features-title" class="px-0 py-16 lg:px-8 lg:py-20">
+  <div class="mx-auto mb-12 max-w-2xl sm:text-center">
+    <p class="mb-4 inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-800">Deine Möglichkeiten</p>
+    <h2 id="features-title" class="relative mb-6 text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
+      <svg aria-hidden="true" viewBox="0 0 52 24" fill="currentColor" class="absolute -left-4 -top-6 -z-10 hidden w-32 text-emerald-100 sm:block">
+        <defs><pattern id="home-features-dots" width=".135" height=".30"><circle cx="1" cy="1" r=".7" /></pattern></defs>
+        <rect width="52" height="24" fill="url(#home-features-dots)" />
+      </svg>
+      Alles für deine Tabellen.<br class="hidden sm:block" /> An einem Ort.
+    </h2>
+    <p class="text-base leading-relaxed text-slate-600 md:text-lg">Von der ersten Arbeitsmappe bis zum nächsten Tabellenblatt: Organisiere und bearbeite deine Daten in deinem eigenen Arbeitsbereich.</p>
+  </div>
+  <div class="mx-auto grid max-w-screen-lg gap-8 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-slate-200">
+    @for (group of groups; track $index) {
+      <div class="space-y-8 sm:px-8 lg:px-12">
+        @for (feature of group; track feature.title) {
+          <div class="flex max-w-md flex-col gap-4 sm:flex-row">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+              <svg aria-hidden="true" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="feature.icon" /></svg>
+            </div>
+            <div>
+              <h3 class="mb-2 text-xl font-bold leading-tight text-slate-900">{{ feature.title }}</h3>
+              <p class="text-sm leading-relaxed text-slate-600">{{ feature.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ExcelApi } from '../api/ExcelApi';
-import { Type } from '../models/type';
+import { TypeModel } from '../models/type.model';
 import { UserFilesService } from './UserFiles.service';
 import { WorkBooksService } from './workBook.service';
 
@@ -10,7 +10,7 @@ describe('User files storage', () => {
     const service = TestBed.inject(UserFilesService);
     const workbook = TestBed.inject(WorkBooksService).createWorkbook(42);
     workbook.name = 'Budget';
-    workbook.sheets[0].cells.set('0,0', { value: 'Hello', type: Type.STRING });
+    workbook.sheets[0].cells.set('0,0', { value: 'Hello', type: TypeModel.STRING });
     const previous = localStorage.getItem('userFiles');
 
     try {

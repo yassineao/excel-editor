@@ -9,6 +9,11 @@ describe('Spreadsheet', () => {
   let fixture: ComponentFixture<Spreadsheet>;
 
   beforeEach(async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(800);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(544);
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      return { height: 48, width: this.matches('th') ? 112 : 160 } as DOMRect;
+    });
     await TestBed.configureTestingModule({
       imports: [Spreadsheet],
     }).compileComponents();
@@ -21,8 +26,95 @@ describe('Spreadsheet', () => {
     await fixture.whenStable();
   });
 
+  afterEach(() => vi.restoreAllMocks());
+
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('initializes dimension signals from rendered elements', () => {
+    expect(component.grid.rowHeight()).toBe(48);
+    expect(component.grid.headerHeight()).toBe(48);
+    expect(component.grid.rowHeaderWidth()).toBe(112);
+    expect(component.grid.defaultColumnWidth()).toBe(160);
+    expect(component.tableWidth()).toBe(112 + 26 * 160);
+  });
+
+  it('tracks horizontal and vertical render starts independently', async () => {
+    const viewport: HTMLElement = fixture.nativeElement.querySelector('#spreadsheet');
+    viewport.scrollLeft = component.grid.defaultColumnWidth() * 12;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleCols()).toBe(8);
+    expect(component.grid.firstVisibleRow()).toBe(0);
+
+    viewport.scrollTop = component.grid.rowHeight() * 24;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleRow()).toBe(18);
+    expect(component.grid.firstVisibleCols()).toBe(8);
+
+    viewport.scrollLeft = 0;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleCols()).toBe(0);
+    expect(component.grid.firstVisibleRow()).toBe(18);
+  });
+
+  it('renders a limited column range and accounts for resized offscreen columns', async () => {
+    const viewport: HTMLElement = fixture.nativeElement.querySelector('#spreadsheet');
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 0-25"]')).toBeNull();
+    component.columnWidths.set({ 0: 320, 20: 240 });
+    await fixture.whenStable();
+    viewport.scrollLeft = 320 + 19 * 160;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleCols()).toBe(16);
+    expect(component.grid.leftSpacerWidth()).toBe(320 + 15 * 160);
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 0-0"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 0-20"]')).not.toBeNull();
+    viewport.scrollLeft = 0;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleCols()).toBe(0);
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 0-0"]')).not.toBeNull();
+  });
+
+  it('keeps ranges stable during small scrolls and avoids layout reads when replacing cells', async () => {
+    const viewport: HTMLElement = fixture.nativeElement.querySelector('#spreadsheet');
+    const rows = component.grid.visibleRows();
+    const cols = component.grid.visibleCols();
+    const measure = vi.mocked(HTMLElement.prototype.getBoundingClientRect);
+    measure.mockClear();
+    const width = vi.spyOn(viewport, 'clientWidth', 'get');
+    const height = vi.spyOn(viewport, 'clientHeight', 'get');
+    width.mockClear();
+    height.mockClear();
+    for (let pixel = 1; pixel <= 20; pixel++) {
+      viewport.scrollLeft = pixel;
+      viewport.scrollTop = pixel;
+      viewport.dispatchEvent(new Event('scroll'));
+      await fixture.whenStable();
+    }
+    expect(component.grid.visibleRows()).toBe(rows);
+    expect(component.grid.visibleCols()).toBe(cols);
+    viewport.scrollLeft = 160 * 16;
+    viewport.scrollTop = 48 * 24;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(component.grid.firstVisibleCols()).toBe(12);
+    expect(component.grid.firstVisibleRow()).toBe(18);
+    expect(measure).not.toHaveBeenCalled();
+    expect(width).not.toHaveBeenCalled();
+    expect(height).not.toHaveBeenCalled();
+  });
+
+  it('updates visible geometry when a column is resized without scrolling', async () => {
+    const previousEnd = component.grid.visibleCols().at(-1)!;
+    component.columnWidths.set({ 0: 640 });
+    await fixture.whenStable();
+    expect(component.grid.visibleCols().at(-1)!).toBeLessThan(previousEnd);
+    expect(component.tableWidth()).toBe(112 + 25 * 160 + 640);
   });
 
   it('displays column A and labels beyond Z', () => {
@@ -71,29 +163,44 @@ describe('Spreadsheet', () => {
 
   it('renders only valid cell positions, including the last cell', async () => {
     const inputs: NodeListOf<HTMLInputElement> = fixture.nativeElement.querySelectorAll('td input');
-    expect(inputs.length).toBe(50);
-    expect(component.sheet().rows).toBe(10);
-    expect(component.sheet().columns).toBe(5);
-    const lastCell = inputs[inputs.length - 1];
+    expect(inputs.length).toBeLessThan(1000);
+    expect(component.sheet().rows).toBe(1000);
+    expect(component.sheet().columns).toBe(26);
+    const viewport: HTMLElement = fixture.nativeElement.querySelector('#spreadsheet');
+    viewport.scrollLeft = component.tableWidth()! - 800;
+    viewport.scrollTop = 1000 * component.grid.rowHeight() - 500;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    const lastCell: HTMLInputElement = fixture.nativeElement.querySelector('[aria-label="Cell 999-25"]');
+    expect(lastCell).not.toBeNull();
     lastCell.dispatchEvent(new Event('focus'));
     lastCell.value = 'Last cell';
     lastCell.dispatchEvent(new Event('input'));
     await fixture.whenStable();
-    expect(component.selectedCellPosition()).toBe('Row 10, Col E');
-    expect(component.sheet().cells.get('9,4')?.value).toBe('Last cell');
+    expect(component.selectedCellPosition()).toBe('Row 1000, Col Z');
+    expect(component.sheet().cells.get('999,25')?.value).toBe('Last cell');
+    viewport.scrollTop = 0;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 999-25"]')).toBeNull();
+    viewport.scrollLeft = component.tableWidth()! - 800;
+    viewport.scrollTop = 1000 * component.grid.rowHeight() - 500;
+    viewport.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('[aria-label="Cell 999-25"]').value).toBe('Last cell');
   });
 
   it('preserves larger sheets and their existing values', async () => {
     const larger: Sheet = {
-      id: 'large', name: 'Large', rows: 12, columns: 8,
+      id: 'large', name: 'Large', rows: 1001, columns: 27,
       cells: new Map(component.sheet().cells),
     };
     fixture.componentRef.setInput('sheet', larger);
     await fixture.whenStable();
     component.updateCell(11, 7, 'Keep me');
     component.commitChanges();
-    expect(component.rows().length).toBe(12);
-    expect(component.cols().length).toBe(8);
+    expect(component.grid.rows().length).toBe(1001);
+    expect(component.grid.cols().length).toBe(27);
     expect(larger.cells.get('11,7')?.value).toBe('Keep me');
   });
 
@@ -101,8 +208,8 @@ describe('Spreadsheet', () => {
     component.sheetService().deleteRow(0);
     component.sheetService().deleteCol(0);
     component.commitChanges();
-    expect(component.sheet().rows).toBe(10);
-    expect(component.sheet().columns).toBe(5);
+    expect(component.sheet().rows).toBe(1000);
+    expect(component.sheet().columns).toBe(26);
     expect(() => component.selectCell(9, 4)).not.toThrow();
   });
 
